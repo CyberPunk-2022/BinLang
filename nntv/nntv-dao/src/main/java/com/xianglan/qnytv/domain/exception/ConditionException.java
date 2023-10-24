@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.doamin.exception;
+package com.xianglan.qnytv.domain.exception;
 
 public class ConditionException extends RuntimeException{
 

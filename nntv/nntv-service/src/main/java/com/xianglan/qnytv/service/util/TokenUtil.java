@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.imooc.bilibili.domain.exception.ConditionException;
+import com.xianglan.qnytv.domain.exception.ConditionException;
 
 import java.util.Calendar;
 import java.util.Date;
