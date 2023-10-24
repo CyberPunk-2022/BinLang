@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.util;
+package com.xianglan.qnytv.service.util;
 
 import org.apache.commons.codec.binary.Base64;
 

@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.util;
+package com.xianglan.qnytv.service.util;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
@@ -12,6 +12,7 @@ import java.security.SecureRandom;
  * AES: Advanced Encryption Standard 高级加密标准
  * 最常见的对称加密算法，即加密和解密使用同样的密钥，加密结果可逆
  * 特点：加密速度非常快，适合经常发送数据的场合
+ *
  */
 public class AESUtil {
 
@@ -39,12 +40,6 @@ public class AESUtil {
         return new String(result, StandardCharsets.UTF_8);
     }
 
-    /**
-     * 主要加密方法
-     * @param content
-     * @return
-     * @throws Exception
-     */
     public String encrypt(String content) throws Exception {
         byte[] result = encryptCipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
         return Base64.encodeBase64String(result);
