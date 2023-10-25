@@ -14,15 +14,18 @@ public class TokenUtil {
 
     private static final String ISSUER = "签发者";
 
+    private static final int DEFAULT_TIME=60*60*24*7;
+
     public static String generateToken(Long userId) throws Exception{
         Algorithm algorithm = Algorithm.RSA256(RSAUtil.getPublicKey(), RSAUtil.getPrivateKey());
+        // 日历，方便设置过期时间
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.SECOND, 30);
-        return JWT.create().withKeyId(String.valueOf(userId))
+        calendar.add(Calendar.SECOND, DEFAULT_TIME);
+        return JWT.create().withKeyId(String.valueOf(userId))// 用户id
                 .withIssuer(ISSUER)
-                .withExpiresAt(calendar.getTime())
-                .sign(algorithm);
+                .withExpiresAt(calendar.getTime())// 随着过期时间
+                .sign(algorithm);// 签名，RSA加密
     }
 
     public static Long verifyToken(String token){
@@ -37,7 +40,6 @@ public class TokenUtil {
         }catch (Exception e){
             throw new ConditionException("非法用户token！");
         }
-
 
     }
 }
