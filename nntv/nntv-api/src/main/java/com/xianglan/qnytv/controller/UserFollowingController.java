@@ -3,7 +3,12 @@ package com.xianglan.qnytv.controller;
 import com.xianglan.qnytv.domain.FollowingGroup;
 import com.xianglan.qnytv.domain.JsonResponse;
 import com.xianglan.qnytv.domain.UserFollowing;
+import com.xianglan.qnytv.domain.UserMoment;
+import com.xianglan.qnytv.domain.annotation.ApiLimitedRole;
+import com.xianglan.qnytv.domain.annotation.DataLimited;
+import com.xianglan.qnytv.domain.constant.AuthRoleConstant;
 import com.xianglan.qnytv.service.UserFollowingService;
+import com.xianglan.qnytv.service.UserMomentsService;
 import com.xianglan.qnytv.support.UserSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,18 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class FollowingController {
+public class UserFollowingController {
     @Autowired
     private UserFollowingService userFollowingService;
 
     @Autowired
     private UserSupport userSupport;
 
-    /**
-     * 新增用户关注
-     * @param userFollowing
-     * @return
-     */
     @PostMapping("/user-followings")
     public JsonResponse<String> addUserFollowings(@RequestBody UserFollowing userFollowing){
         Long userId = userSupport.getCurrentUserId();
@@ -34,10 +34,6 @@ public class FollowingController {
         return JsonResponse.success();
     }
 
-    /**
-     * 获取用户关注列表
-     * @return
-     */
     @GetMapping("/user-followings")
     public JsonResponse<List<FollowingGroup>> getUserFollowings(){
         Long userId = userSupport.getCurrentUserId();
@@ -45,10 +41,6 @@ public class FollowingController {
         return new JsonResponse<>(result);
     }
 
-    /**
-     * 获取用户粉丝列表
-     * @return
-     */
     @GetMapping("/user-fans")
     public JsonResponse<List<UserFollowing>> getUserFans(){
         Long userId = userSupport.getCurrentUserId();
@@ -56,11 +48,6 @@ public class FollowingController {
         return new JsonResponse<>(result);
     }
 
-    /**
-     * 新增用户关注分组
-     * @param followingGroup
-     * @return
-     */
     @PostMapping("/user-following-groups")
     public JsonResponse<Long> addUserFollowingGroups(@RequestBody FollowingGroup followingGroup){
         Long userId = userSupport.getCurrentUserId();

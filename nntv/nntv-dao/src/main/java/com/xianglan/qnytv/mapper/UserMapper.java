@@ -1,11 +1,13 @@
 package com.xianglan.qnytv.mapper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xianglan.qnytv.domain.RefreshTokenDetail;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,5 +35,14 @@ public interface UserMapper {
     Integer pageCountUserInfos(Map<String, Object> params);
 
     List<UserInfo> pageListUserInfos(JSONObject params);
+    // TODO
+    Integer deleteRefreshToken(@Param("refreshToken") String refreshToken,
+                               @Param("userId") Long userId);
+
+    Integer addRefreshToken(@Param("refreshToken")String refreshToken,
+                            @Param("userId") Long userId,
+                            @Param("createTime") Date createTime);
+
+    RefreshTokenDetail getRefreshTokenDetail(String refreshToken);
 
 }

@@ -2,6 +2,9 @@ package com.xianglan.qnytv.controller;
 
 import com.xianglan.qnytv.domain.JsonResponse;
 import com.xianglan.qnytv.domain.UserMoment;
+import com.xianglan.qnytv.domain.annotation.ApiLimitedRole;
+import com.xianglan.qnytv.domain.annotation.DataLimited;
+import com.xianglan.qnytv.domain.constant.AuthRoleConstant;
 import com.xianglan.qnytv.service.UserMomentsService;
 import com.xianglan.qnytv.support.UserSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ public class UserMomentsController {
      * @return
      * @throws Exception
      */
+    @ApiLimitedRole(limitedRoleCodeList = {AuthRoleConstant.ROLE_LV0})
+    @DataLimited
     @PostMapping("/user-moments")
     public JsonResponse<String> addUserMoments(@RequestBody UserMoment userMoment) throws Exception {
         Long userId = userSupport.getCurrentUserId();
