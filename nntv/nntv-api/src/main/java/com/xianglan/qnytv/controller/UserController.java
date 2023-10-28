@@ -9,6 +9,7 @@ import com.xianglan.qnytv.service.UserFollowingService;
 import com.xianglan.qnytv.service.UserService;
 import com.xianglan.qnytv.service.util.RSAUtil;
 import com.xianglan.qnytv.support.UserSupport;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class UserController {
     @Autowired
@@ -33,12 +35,11 @@ public class UserController {
         User user = userService.getUserInfo(userId);
         return new JsonResponse<>(user);
     }
-
-    @GetMapping("/rsa-pks")
-    public JsonResponse<String> getRsaPublicKey(){
-        System.out.println("get public key");
-        return new JsonResponse<>(RSAUtil.getPublicKeyStr());
-    }
+//    // 这种认证方式有安全漏洞，先不用了
+//    @GetMapping("/rsa-pks")
+//    public JsonResponse<String> getRsaPublicKey(){
+//        return new JsonResponse<>(RSAUtil.getPublicKeyStr());
+//    }
 
     /**
      * 用户注册
@@ -56,7 +57,7 @@ public class UserController {
     @PostMapping("/user-tokens")
     public JsonResponse<String> login(@RequestBody User user) throws Exception{
         String token = userService.login(user);
-        //System.out.println("login user="+user);
+        log.info("user:{} log in",user);
         return new JsonResponse<>(token);
     }
 
@@ -115,7 +116,5 @@ public class UserController {
         String accessToken = userService.refreshAccessToken(refreshToken);
         return new JsonResponse<>(accessToken);
     }
-
-
 
 }
