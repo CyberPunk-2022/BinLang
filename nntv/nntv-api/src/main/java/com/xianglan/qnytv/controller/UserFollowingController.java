@@ -62,4 +62,5 @@ public class UserFollowingController {
         List<FollowingGroup> list = userFollowingService.getUserFollowingGroups(userId);
         return new JsonResponse<>(list);
     }
+
 }

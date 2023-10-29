@@ -24,6 +24,8 @@ public class UserInfo {
     private Date createTime;
 
     private Date updateTime;
-
+    /**
+     * 用户是否关注，查询粉丝列表专用
+     */
     private Boolean followed;
 }
