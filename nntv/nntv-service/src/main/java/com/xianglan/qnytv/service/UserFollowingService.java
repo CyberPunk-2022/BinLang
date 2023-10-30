@@ -93,7 +93,7 @@ public class UserFollowingService {
         List<UserFollowing> fanList = userFollowingMapper.getUserFans(userId);
         Set<Long> fanIdSet = fanList.stream().map(UserFollowing::getUserId).collect(Collectors.toSet());
         List<UserInfo> userInfoList = new ArrayList<>();
-        if(fanIdSet.size() > 0){
+        if(!fanIdSet.isEmpty()){
             userInfoList = userService.getUserInfoByUserIds(fanIdSet);
         }
         List<UserFollowing> followingList = userFollowingMapper.getUserFollowings(userId);
