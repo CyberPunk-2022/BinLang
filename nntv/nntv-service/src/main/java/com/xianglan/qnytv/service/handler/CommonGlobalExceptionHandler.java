@@ -2,7 +2,7 @@ package com.xianglan.qnytv.service.handler;
 
 
 
-import com.xianglan.qnytv.domain.JsonResponse;
+import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.domain.exception.ConditionException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

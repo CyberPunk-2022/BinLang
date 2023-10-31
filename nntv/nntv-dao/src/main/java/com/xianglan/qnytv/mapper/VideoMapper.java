@@ -1,11 +1,12 @@
 package com.xianglan.qnytv.mapper;
 
-import com.xianglan.qnytv.domain.Video;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xianglan.qnytv.domain.VideoPo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface VideoMapper {
-    List<Video> selectVideosByUserId(Long userId);
+public interface VideoMapper extends BaseMapper<VideoPo> {
+    List<VideoPo> selectVideosByUserId(Long userId);
 }

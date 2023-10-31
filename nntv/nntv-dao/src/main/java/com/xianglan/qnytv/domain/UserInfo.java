@@ -1,11 +1,13 @@
 package com.xianglan.qnytv.domain;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
 @Data
 @Accessors(chain = true)
+@TableName("t_user_info")
 public class UserInfo {
     private Long id;
 

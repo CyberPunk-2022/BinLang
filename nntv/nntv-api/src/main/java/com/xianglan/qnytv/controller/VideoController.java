@@ -1,6 +1,6 @@
 package com.xianglan.qnytv.controller;
 
-import com.xianglan.qnytv.domain.JsonResponse;
+import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.service.VideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xianglan.qnytv.mapper.VideoMapper">
 
-    <select id="selectVideosByUserId" parameterType="java.lang.Long" resultType="com.xianglan.qnytv.domain.Video">
+    <select id="selectVideosByUserId" parameterType="java.lang.Long" resultType="com.xianglan.qnytv.domain.VideoPo">
         select
             *
         from

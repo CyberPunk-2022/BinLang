@@ -1,8 +1,8 @@
 package com.xianglan.qnytv.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xianglan.qnytv.domain.JsonResponse;
-import com.xianglan.qnytv.domain.PageResult;
+import com.xianglan.qnytv.domain.base.JsonResponse;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
 import com.xianglan.qnytv.service.UserFollowingService;

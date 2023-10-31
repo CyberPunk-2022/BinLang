@@ -1,7 +1,9 @@
 package com.xianglan.qnytv.domain;
 
-import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.util.Date;
+@TableName("t_comment")
 public class Comment {
     private Long id;
     private Long videoId;

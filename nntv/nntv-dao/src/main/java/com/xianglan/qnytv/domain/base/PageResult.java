@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.domain;
+package com.xianglan.qnytv.domain.base;
 
 import lombok.Data;
 import lombok.Getter;

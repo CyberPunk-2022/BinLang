@@ -1,12 +1,13 @@
 package com.xianglan.qnytv.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xianglan.qnytv.domain.FollowingGroup;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface FollowingGroupMapper {
+public interface FollowingGroupMapper extends BaseMapper<FollowingGroup> {
 
     FollowingGroup getByType(String type);
 

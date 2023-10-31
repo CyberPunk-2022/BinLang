@@ -1,6 +1,6 @@
 package com.xianglan.qnytv.controller;
 
-import com.xianglan.qnytv.domain.JsonResponse;
+import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

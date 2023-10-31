@@ -1,6 +1,7 @@
 package com.xianglan.qnytv.mapper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xianglan.qnytv.domain.RefreshTokenDetail;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<User> {
     User getUserByPhone(String phone);
 
     Integer addUser(User user);
@@ -35,11 +36,11 @@ public interface UserMapper {
     Integer pageCountUserInfos(Map<String, Object> params);
 
     List<UserInfo> pageListUserInfos(JSONObject params);
-    // TODO
+
     Integer deleteRefreshToken(@Param("refreshToken") String refreshToken,
                                @Param("userId") Long userId);
 
-    Integer addRefreshToken(@Param("refreshToken")String refreshToken,
+    Integer addRefreshToken(@Param("refreshToken") String refreshToken,
                             @Param("userId") Long userId,
                             @Param("createTime") Date createTime);
 

@@ -2,7 +2,7 @@ package com.xianglan.qnytv.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.util.StringUtils;
-import com.xianglan.qnytv.domain.PageResult;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.RefreshTokenDetail;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Video {
+public class VideoPo {
     private Long id;
     /**
      * 作者id

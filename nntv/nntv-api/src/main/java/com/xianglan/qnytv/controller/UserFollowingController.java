@@ -1,14 +1,9 @@
 package com.xianglan.qnytv.controller;
 
 import com.xianglan.qnytv.domain.FollowingGroup;
-import com.xianglan.qnytv.domain.JsonResponse;
+import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.domain.UserFollowing;
-import com.xianglan.qnytv.domain.UserMoment;
-import com.xianglan.qnytv.domain.annotation.ApiLimitedRole;
-import com.xianglan.qnytv.domain.annotation.DataLimited;
-import com.xianglan.qnytv.domain.constant.AuthRoleConstant;
 import com.xianglan.qnytv.service.UserFollowingService;
-import com.xianglan.qnytv.service.UserMomentsService;
 import com.xianglan.qnytv.support.UserSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
