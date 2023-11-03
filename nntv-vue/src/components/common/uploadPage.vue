@@ -1,26 +1,43 @@
 <template>
   <el-dialog
       v-model="props.dialogVisible"
-      title="登录"
+      title="发布视频"
       width="500px"
       center
       @close="loginCloseDialog"
   >
-    <el-form :model="props.loginForm" label-width="120px">
-      <el-form-item label="用户名">
-        <el-input v-model="props.loginForm.username" placeholder="输入手机号"/>
+    <el-form :model="formData" label-width="120px">
+      <el-form-item label="视频标题">
+        <el-input v-model="formData.title" placeholder="输入视频"/>
       </el-form-item>
-      <el-form-item label="用户名">
-        <div style="display: inline-block">
-          <el-input v-model="props.loginForm.password" placeholder="输入验证码"/>
-        </div>
-        <div style="display: inline-block">
-          <el-button>获取验证码</el-button>
-        </div>
+      <el-form-item label="视频类型">
+        <el-input v-model="formData.category" placeholder="输入视频类型"/>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitLogin">登录</el-button>
+      <el-form-item label="上传视频">
+        <el-upload
+            class="upload-demo"
+            drag
+            :limit="1"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            multiple
+        >
+          <el-icon class="el-icon--upload">
+            <upload-filled/>
+          </el-icon>
+          <div class="el-upload__text">
+            拖拽文件至此 <em>点击上传</em>
+          </div>
+          <template #tip>
+            <div class="el-upload__tip">
+              支持MP4/avi/flv格式视频
+            </div>
+          </template>
+        </el-upload>
       </el-form-item>
+      <div style="position:absolute;left:39%;">
+        <el-button type="primary" @click="submit" siz="large">发布视频</el-button>
+
+      </div>
     </el-form>
     <template #footer>
 
@@ -29,14 +46,12 @@
 </template>
 
 <script setup>
+import {UploadFilled} from '@element-plus/icons-vue'
 
-import {closeDialog} from "vant";
+
+import {reactive} from "vue";
 
 const props = defineProps({
-  loginForm: {
-    type: Object,
-    required: true,
-  },
   dialogVisible: {
     type: Boolean,
     required: true,
@@ -45,8 +60,12 @@ const props = defineProps({
 
 })
 
+
+const formData = reactive({})
+
+
 const submitLogin = () => {
-  console.log('submitLogin', props.loginForm)
+  console.log('submitLogin', formData)
   console.log('loginDialogVisible', props.loginDialogVisible)
 }
 
@@ -58,21 +77,17 @@ const loginCloseDialog = () => {
   emits("onCloseDialog")
 }
 
-//emit closeDialog方法
-
-
-// const showLoginForm = () => {
-//   console.log('props.loginDialogVisible',props.loginDialogVisible)
-//   return props.loginDialogVisible;
-// }
-//
-//
-// defineExpose({
-//   showLoginForm
-// });
 
 </script>
 
 <style scoped>
+
+:deep(.el-upload-dragger) {
+  width: 200px;
+}
+
+:deep(.el-upload-list__item-file-name) {
+  text-wrap: wrap;
+}
 
 </style>

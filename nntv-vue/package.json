@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "@layui/layui-vue": "^2.10.3",
     "@vant/touch-emulator": "^1.4.0",
     "axios": "^1.6.0",

@@ -10,7 +10,7 @@
 <script setup>
 
 import {defineComponent} from "vue";
-import LayMainPage from "./layui/LayMainPage.vue";
+import LayMainPage from "./index/LayMainPage.vue";
 
 defineComponent({
   name: "index"
