@@ -1,23 +1,64 @@
 <template>
-  <div class="video-box">
-    <div :id="id"></div>
-    <slot/>
-  </div>
+  <div class="mask-filter" style="position: absolute"/>
+  <div>
+    <div :id="id" class="v-xg-video"/>
 
+    <div class="right-menu">
+      <slot name="right-menu">
+        右侧菜单
+      </slot>
+    </div>
+    <div class="video-footer">
+      <div>
+        <slot name="video-footer">
+          底部栏位
+        </slot>
+      </div>
+      <div class="vide-progress">
+
+        <div style="display: inline-block; margin-right: 10px">
+          <!-- 给元素绑定一个data-->
+          <el-button type="primary" v-on:indexId="props.id" @click="playOrPause">
+            <van-icon name="play" v-if="isPaused" size="10"/>
+            <van-icon name="pause" v-if="!isPaused" size="10"/>
+          </el-button>
+        </div>
+        <div style="width: 90%;display: inline-block;">
+          <van-slider v-model="currentTime" @change="changeProgress" bar-height="4px"
+                      active-color="#ee0a24">
+            <template #button>
+              <div class="custom-button">{{ currentTime }}</div>
+            </template>
+          </van-slider>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
 </template>
 <script setup>
-import {onMounted, watch} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import Player from "xgplayer";
 import {usePlayerStore} from "../store/player.js";
 import {storeToRefs} from "pinia";
+
 
 // 获取pinia里的数据
 
 // 使pinia里state变成响应式数据
 let playerStore = usePlayerStore();
 let {xgPlayer} = storeToRefs(playerStore)
+import {Events} from 'xgplayer'
 
 let player = null;
+
+
+let isPaused = ref(true)
+
+
+let currentTime = ref(0)
 
 const props = defineProps({
   id: {
@@ -40,11 +81,11 @@ const props = defineProps({
   },
   width: {
     type: String,
-    default: '100%'
+    default: '100'
   },
   height: {
     type: String,
-    default: '100%'
+    default: '100'
   }
 });
 
@@ -64,9 +105,6 @@ onMounted(() => {
 
 // 初始化西瓜视频
 const initPlayer = () => {
-
-  console.log('window.innerWidth', window)
-  console.log('width', props.width.replace("%",''))
   let config = {
     "id": props.id,
     "url": props.videoUrl,
@@ -75,14 +113,110 @@ const initPlayer = () => {
     "plugins": [],
     "autoplay": false,
     "closeVideoClick": true,
-    height: window.innerHeight-80,
-    width: window.innerWidth
+    height: window.innerHeight - 200, //视频高度
+    fitVideoSize: 'auto',
+    keyShortcut: false, //禁用所有快捷键
+    ignores: ['definition', 'error', 'fullscreen', 'i18n', 'pause', 'loading', 'play', 'time', 'mobile', 'pc', 'poster', 'progress', 'replay', 'volume']
   }
 
   player = new Player(config);
   player.pause()
+
+  //js去掉百分号
+
+  player.on(Events.TIME_UPDATE, () => {
+    // console.log('当前时间' + player.currentTime)
+    // console.log('视频时长' + player.duration)
+    //转成整数
+    currentTime.value = parseInt(player.currentTime)
+    // console.log('百分比' + currentTime.value)
+  })
+
   //把播放器存入到store中去做播放暂停以及其他操作
   playerStore.addPlayer(props.id, player);
-  //js去掉百分号
+
+  player.on(Events.PLAYING, () => {
+    //正在播放回调
+    console.log('正在播放')
+    isPaused.value = false
+  })
+
+  player.on(Events.PAUSE, () => {
+    //正在播放回调
+    console.log('暂停')
+    isPaused.value = true
+  })
+
 };
+
+/**
+ * 进度位置
+ * @param number
+ */
+const changeProgress = (number) => {
+  console.log('当前进度' + number)
+  player.seek(number)
+}
+
+const playOrPause = () => {
+  if (player.paused) {
+    player.play()
+    isPaused.value = false
+  } else {
+    player.pause();
+    isPaused.value = true
+  }
+}
+
 </script>
+
+<style scoped>
+.mask-filter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #18a472;
+  backdrop-filter: blur(40px);
+  border: 1px solid #1d2322;
+  border-radius: 20px;
+}
+
+.v-xg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.right-menu, .video-footer {
+  position: absolute;
+  font-size: 14px;
+}
+
+.right-menu {
+  right: 10%;
+  bottom: 20%;
+  width: 50px;
+}
+
+.video-footer {
+  left: 1%;
+  bottom: 10%;
+  width: 100%;
+}
+
+.custom-button {
+  background-color: #8d0000;
+  border: 1px solid #1d2322;
+  border-radius: 5px;
+  color: #fff;
+  padding: 2px;
+}
+
+.vide-progress {
+  position: absolute;
+  margin-top: 10px;
+  width: 90%;
+}
+</style>

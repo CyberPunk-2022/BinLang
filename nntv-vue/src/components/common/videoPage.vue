@@ -1,23 +1,23 @@
 <template>
+
   <div>
     <xg-player :id="prop.videoIndex"
                :video-url="videoInfo.url"
                :poster="videoInfo.poster">
-      <div class="right-info">
-        <div>头像</div>
-        <div>喜欢</div>
-        <div>评论</div>
-        <div>收藏</div>
-        <div>分享</div>
-      </div>
+
+      <template v-for="(item, key, i) in slots"
+                :key="i" v-slot:[key]="{ record, rowIndex, column }">
+        <slot  :name="key"/>
+      </template>
     </xg-player>
   </div>
+
 
 </template>
 
 <script setup>
 
-import {onMounted} from "vue";
+import { useSlots} from "vue";
 import 'xgplayer/dist/index.min.css';
 import XgPlayer from "../base/xgPlayer.vue";
 
@@ -28,81 +28,17 @@ let prop = defineProps({
     required: true
   },
   videoIndex: {
-    type: String,<template>
-  <el-dialog
-      v-model="props.dialogVisible"
-      title="登录"
-      width="500px"
-      center
-  @close="loginCloseDialog"
-  >
-
-  <template #footer>
-
-</template>
-</el-dialog>
-</template>
-
-<script setup>
-
-
-  const props = defineProps({
-  loginForm: {
-  type: Object,
-  required: true,
-},
-  dialogVisible: {
-  type: Boolean,
-  required: true,
-  default: false
-}
-
-})
-
-  const submitLogin = () => {
-  console.log('submitLogin', props.loginForm)
-  console.log('loginDialogVisible', props.loginDialogVisible)
-}
-
-
-  let emits = defineEmits(["onCloseDialog"]);
-
-
-  const loginCloseDialog = () => {
-  emits("onCloseDialog")
-}
-
-
-</script>
-
-<style scoped>
-
-</style>
+    type: String,
     required: true
-  }
+  },
+  slots: []
 })
-
-
-onMounted(() => {
-  console.log("创建播放器", prop)
-})
+const slots = useSlots();
 
 
 </script>
 
 <style scoped>
-.right-info {
-  position: absolute;
-  bottom: 150px;
-  right: 0px;
-  color: red;
-}
 
-.right-info > div {
-  margin-top: 10px;
-  height: 40px;
-  width: 60px;
-  align-content: center;
-  background-color: #0bc15f;
-}
+
 </style>

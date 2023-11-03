@@ -41,8 +41,7 @@
       <div class="header-search">
         <div
             style="margin-right: 20%;border: 2px solid lightgray;padding-left: 10px;padding-right: 10px;border-radius: 10px">
-          <div style="
-          width: 100px;margin-right: 110px;color: black;
+          <div style="color: black;
           border-radius: 10px;display: inline-block">
             <div v-if="!isClickSearch" @click="isClickSearch=true" style="height: 30px;
              width:200px; margin-top: 10px;
@@ -59,7 +58,9 @@
           </div>
         </div>
         <a href="#">
-          <div class="left-side-menu">
+          <div class="left-side-menu" @click="()=>{
+            uploadDialogVisible = !uploadDialogVisible
+          }">
             上传视频
           </div>
         </a>
@@ -74,10 +75,11 @@
       <div style="margin:10px">
         <van-swipe :vertical="true" style="height: 90vh;"
                    ref="swipeRef"
-                   @drag-end="dragEnd"
+                   @change="onSwipeChange"
                    :show-indicators="false"
                    :loop="false"
         >
+          <!-- 每一次都去创建一个视频播放器-->
           <van-swipe-item
               v-for="(item, i) in playDatas.videos"
               :key="i"
@@ -98,7 +100,7 @@
                         src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
                     >
                     </van-image>
-                    <div style="position: absolute;right: 30px;top:50px">
+                    <div style="position: absolute;right: 0px;top:50px">
                       <van-icon name="add" size="20" @click="clickFunc('add')"/>
                     </div>
                   </div>
@@ -136,9 +138,15 @@
     </div>
 
   </div>
+  <!--登录-->
   <login-page :dialog-visible="loginDialogVisible" @onCloseDialog="()=>{
      loginDialogVisible = false
   }" :login-form="loginForm"/>
+
+  <!-- 上传视频-->
+  <upload-page :dialog-visible="uploadDialogVisible" @onCloseDialog="()=>{
+     uploadDialogVisible = false
+  }"/>
 </template>
 
 
@@ -149,6 +157,7 @@ import VideoPage from "../common/videoPage.vue";
 import {usePlayerStore} from "../store/player.js";
 import {storeToRefs} from "pinia";
 import LoginPage from "../common/loginPage.vue";
+import UploadPage from "../common/uploadPage.vue";
 
 let playerStore = usePlayerStore();
 let {xgPlayer} = storeToRefs(playerStore)
@@ -156,10 +165,12 @@ let {xgPlayer} = storeToRefs(playerStore)
 
 let isClickSearch = ref(false);
 
-let currentSwipeIndex = ref(0);
+let currentSwipeIndex = reactive({
+  index: 0
+});
 
 const loginDialogVisible = ref(false)
-const loginRef = ref(null)
+const uploadDialogVisible = ref(false)
 
 
 const loginForm = ref({
@@ -204,10 +215,11 @@ onMounted(() => {
   window.addEventListener("keydown", handleKeyUp, true);
 })
 
-const dragEnd = (e) => {
-  currentSwipeIndex.value = e.index;
-  playerStore.playVideo(e.index)
-  console.log("dragEnd", e)
+
+const onSwipeChange = (index) => {
+  console.log('e', index)
+  playerStore.playVideo(index)
+  currentSwipeIndex.index = index
 }
 
 
@@ -216,34 +228,38 @@ const dragEnd = (e) => {
  * @param event
  */
 const handleKeyUp = (event) => {
-  console.log('swipe.value', swipeRef.value)
-  console.log('currentPlayerIndex', currentSwipeIndex)
 
-  let index = currentSwipeIndex.value;
+
+  let index = currentSwipeIndex.index;
+
+  let nowIndex = index;
 
   if (event.key === 'ArrowUp') {// 按下箭头向上键时的处理逻辑
-    let nowIndex = index - 1;
+    nowIndex = index - 1;
     if (nowIndex < 0) {
       return
     } else {
-      currentSwipeIndex.value = nowIndex;
+      currentSwipeIndex.index = nowIndex;
     }
     swipeRef.value.prev()
     //开始播放
     playerStore.playVideo(nowIndex)
   } else if (event.key === 'ArrowDown') { // 按下箭头向下键时的处理逻辑
-    let nowIndex = index + 1;
+    nowIndex = index + 1;
     //获取store中存在的视频播放器数量
-    let lastIndex = playerStore.xgPlayer.length - 1;
-
-    if (nowIndex > lastIndex) {
+    if (nowIndex > playerStore.xgPlayer.length - 1) {
       return
     } else {
-      currentSwipeIndex.value = nowIndex;
+      currentSwipeIndex.index = nowIndex;
     }
     swipeRef.value.next()
     //开始播放
     playerStore.playVideo(nowIndex)
+  }
+  //如果空格
+  if (event.key === ' ') {
+    console.log('space')
+    playerStore.spacePlayVideo(nowIndex)
   }
 }
 
@@ -253,9 +269,7 @@ const createXiGuaVideoPlayerIndex = () => {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   }
 
-  let s = S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
-
-  return s;
+  return S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4();
 }
 
 
