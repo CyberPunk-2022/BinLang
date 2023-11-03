@@ -1,8 +1,8 @@
 package com.xianglan.qnytv.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xianglan.qnytv.domain.JsonResponse;
-import com.xianglan.qnytv.domain.PageResult;
+import com.xianglan.qnytv.domain.base.JsonResponse;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
 import com.xianglan.qnytv.service.UserFollowingService;
@@ -35,18 +35,18 @@ public class UserController {
         User user = userService.getUserInfo(userId);
         return new JsonResponse<>(user);
     }
-//    // 这种认证方式有安全漏洞，先不用了
-//    @GetMapping("/rsa-pks")
-//    public JsonResponse<String> getRsaPublicKey(){
-//        return new JsonResponse<>(RSAUtil.getPublicKeyStr());
-//    }
+    // 这种认证方式有安全漏洞，先不用了
+    @GetMapping("/rsa-pks")
+    public JsonResponse<String> getRsaPublicKey(){
+        return new JsonResponse<>(RSAUtil.getPublicKeyStr());
+    }
 
     /**
      * 用户注册
      */
     @PostMapping("/users")
     public JsonResponse<String> addUser(@RequestBody User user){
-        System.out.println(user);
+        log.info("user:{} try to registry",user);
         userService.addUser(user);
         return JsonResponse.success();
     }

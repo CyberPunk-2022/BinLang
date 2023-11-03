@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.domain;
+package com.xianglan.qnytv.domain.base;
 
 public class JsonResponse<T> {
 

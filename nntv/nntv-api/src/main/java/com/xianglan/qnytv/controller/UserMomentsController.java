@@ -1,6 +1,6 @@
 package com.xianglan.qnytv.controller;
 
-import com.xianglan.qnytv.domain.JsonResponse;
+import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.domain.UserMoment;
 import com.xianglan.qnytv.domain.annotation.ApiLimitedRole;
 import com.xianglan.qnytv.domain.annotation.DataLimited;

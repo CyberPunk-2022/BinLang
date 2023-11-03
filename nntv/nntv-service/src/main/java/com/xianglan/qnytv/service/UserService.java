@@ -2,7 +2,7 @@ package com.xianglan.qnytv.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.util.StringUtils;
-import com.xianglan.qnytv.domain.PageResult;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.RefreshTokenDetail;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
@@ -12,12 +12,14 @@ import com.xianglan.qnytv.mapper.UserMapper;
 import com.xianglan.qnytv.service.util.MD5Util;
 import com.xianglan.qnytv.service.util.RSAUtil;
 import com.xianglan.qnytv.service.util.TokenUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@Slf4j
 public class UserService {
     @Autowired
     private UserMapper userMapper;
@@ -111,6 +113,7 @@ public class UserService {
         }catch (Exception e){
             throw new ConditionException("密码解密失败！");
         }
+        log.info("rawPassword={}",password);
         String salt = dbUser.getSalt();
         String md5Password = MD5Util.sign(rawPassword, salt, "UTF-8");
         if(!md5Password.equals(dbUser.getPassword())){
