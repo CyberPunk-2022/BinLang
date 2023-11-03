@@ -16,6 +16,14 @@ export const usePlayerStore = defineStore("xgPlayer", {
             this.xgPlayer.push(obj)
         },
 
+        //键盘切换到最后一个
+        canPlay(index) {
+            if (index === this.xgPlayer.length - 1) {
+                return false;
+            }
+            return true;
+        },
+
         playVideo(index) {
             for (let i = 0; i < this.xgPlayer.length; i++) {
                 let player = this.xgPlayer[i].player;

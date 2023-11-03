@@ -9,7 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@layui/layui-vue": "^2.10.3",
     "@vant/touch-emulator": "^1.4.0",
+    "axios": "^1.6.0",
+    "element-plus": "^2.4.1",
     "pinia": "^2.1.7",
     "swiper": "^11.0.3",
     "unplugin-vue-components": "^0.25.2",
