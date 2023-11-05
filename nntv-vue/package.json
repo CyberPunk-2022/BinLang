@@ -16,6 +16,7 @@
     "element-plus": "^2.4.1",
     "pinia": "^2.1.7",
     "swiper": "^11.0.3",
+    "unplugin-auto-import": "^0.16.7",
     "unplugin-vue-components": "^0.25.2",
     "vant": "^4.6.8",
     "vue": "^3.3.4",

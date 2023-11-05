@@ -1,14 +1,17 @@
-import {session} from '@/utils/storage.js'
+import axios from 'axios'
+import {ElMessage} from "element-plus";
+import DialogLogin from "../components/base/LoginDialog.js";
 
 
-this.$http.baseURL = "http://127.0.0.1:8808"
-this.$http.interceptors.request.use(config => {
-    // Do something before request is sent
-    const token = session.get('X-ACCESS-TOKEN')
-    config.headers.Authorization = token
-    if (config.method.toUpperCase() === 'POST') {
-        config.headers['Content-Type'] = 'application/json;charset=utf-8'
-    }
+console.log('VITE_APP_BASE_API', import.meta.env.VITE_APP_BASE_API)
+
+const service = axios.create({
+    baseURL: import.meta.env.VITE_APP_BASE_API, timeout: 300000 // request timeout
+})
+service.interceptors.request.use(config => {
+    //从cookie中获取X-Access-Token
+    config.headers['X-Access-Token'] = localStorage.getItem('X-Access-Token')
+    //放入token即可,请求头
     return config;
 }, error => {
     // Do something with request error
@@ -16,11 +19,35 @@ this.$http.interceptors.request.use(config => {
 });
 
 
-this.$http.interceptors.response.use(response => {
+service.interceptors.response.use(response => {
     // Do something with response data
     if (response.status === 200) {
+        if (response.data.code === '555555') {
+            ElMessage({
+                showClose: true,
+                message: '登录才可以使用！',
+                center: true,
+                type: 'error'
+            })
+            DialogLogin(true);
+        } else if (response.data.code === '000000') {
+            // ElMessage({
+            //     showClose: true,
+            //     message: '请求成功',
+            //     center: true,
+            //     type: 'success'
+            // })
+        } else {
+            ElMessage({
+                showClose: true,
+                message: '请求异常',
+                center: true,
+                type: 'error'
+            })
+        }
         return Promise.resolve(response)
     } else {
+
         return Promise.reject(response)
     }
 }, error => {
@@ -29,94 +56,77 @@ this.$http.interceptors.response.use(response => {
 });
 
 
-/**
- * get方法，对应get请求
- * @param {String} url [请求的url地址]
- * @param {Object} params [请求时携带的参数]
- */
+export function post(url, data) {
+    return new Promise((resolve, reject) => {
+
+        service.post(url, data).then(res => {
+            resolve(res)
+
+        }).catch((error => {
+            reject(error)
+        }))
+    })
+
+}
+
+export function postFromData(url, data) {
+    return new Promise((resolve, reject) => {
+
+        service.post(url, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(res => {
+            resolve(res)
+
+        }).catch((error => {
+            reject(error)
+        }))
+    })
+
+}
+
 export function get(url, params) {
     return new Promise((resolve, reject) => {
-        this.$http.get(url, {
-            params: params
-        })
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => {
-                reject(err.data)
-            })
-    })
-}
+        service.get(url, {params}).then(res => {
+            resolve(res)
 
-/**
- * post方法，对应post请求
- * @param {String} url [请求的url地址]
- * @param {Object} params [请求时携带的参数]
- */
-export function post(url, params) {
-    return new Promise((resolve, reject) => {
-        this.$http.post(url, QS.stringify(params))
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => {
-                reject(err.data)
-            })
+        }).catch(error => {
+            reject(error)
+        });
     })
-}
 
-/**
- * get方法，对应get请求,直接在地址后面拼串的形式
- * @param {String} url [请求的url地址]
- * @param {String} params [请求时携带的参数]
- */
-export function getDynamicynamic(url, params) {
-    return new Promise((resolve, reject) => {
-        const completeUrl = `${url}/${params}`
-        this.$http.get(completeUrl, {})
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => {
-                reject(err.data)
-            })
-    })
-}
-
-/**
- * post方法，导出文件
- * @param {String} url [请求的url地址]
- * @param {String} params [请求时携带的参数]
- */
-export function getFileUseBlobByPost(url, params = {}) {
-    return new promise((resolve, reject) => {
-        this.$http({
-            method: 'post',
-            url,
-            data: params,
-            responseType: 'blob'
-        })
-            .then(res => {
-                resolve(res)
-            })
-            .catch(err => {
-                reject(err.data)
-            })
-    })
 }
 
 /**
  * 上传文件
  * @param url
  * @param file
+ * @param uploadProgressCallback
  */
-export function uploadFile(url, file) {
-    this.$http.post({
-        method: 'post',
-        url,
-        data: file,
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
+export function uploadFile(url, file,uploadProgressCallback) {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        service.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress:uploadProgressCallback
+        }).then(res => {
+            resolve(res)
+        }).catch(error => {
+            reject(error)
+        })
     })
+
+}
+
+/**
+ * 表示结果返回成功
+ * @param res
+ * @returns {boolean}
+ */
+export function isSuccess(res) {
+    return res.data.code === '000000'
 }

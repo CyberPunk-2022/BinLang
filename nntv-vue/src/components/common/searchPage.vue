@@ -3,6 +3,7 @@
       v-model="props.dialogVisible"
       title="搜索结果页面"
       width="800px"
+      :close-on-click-modal="false"
       center
       @close="loginCloseDialog"
   >

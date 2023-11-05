@@ -8,9 +8,7 @@ import '@vant/touch-emulator'
 import router from "./components/router/index";
 import pinia from "./components/store/index";
 
-import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-
 
 import {Popup, Toast, setToastDefaultOptions} from "vant";
 
@@ -22,12 +20,6 @@ let app = createApp(App)
 import {I18N} from 'xgplayer'
 import ZH from 'xgplayer/es/lang/zh-cn'
 
-import axios from 'axios'
-
-//统一用$http代替axios
-app.config.globalProperties.$http = axios // 将axios导入为全局配置，通过this.$http进行使用
-
-
 // 启用中文
 I18N.use(ZH)
 
@@ -38,6 +30,5 @@ app.use(pinia)
 app.use(Popup)
 app.use(Toast)
 app.use(router)
-app.use(ElementPlus)
 
 app.mount('#app')

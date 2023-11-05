@@ -1,115 +1,98 @@
 <template>
 
-  <!-- 主窗口分两列显示-->
-  <div class="windows-os window-container" style="flex-direction:row">
 
-    <div style="color:white">
-      <h1 style="margin-left: 35px;margin-bottom: 50px">logo</h1>
-      <a href="#" @click="goCategoryVideo(null)">
-        <div class="left-side-menu">
-          推荐
-        </div>
-      </a>
-      <a href="#" v-for="(item, i) in videoCategory.getVideoCategoryList()" @click="goCategoryVideo(item)">
-        <div class="left-side-menu">
-          {{ item.videoCategoryName }}
-        </div>
-      </a>
-    </div>
-
-    <div class="right-content-container">
-      <div class="header-search">
-        <div class="input-search">
-          <div class="input-search-mask">
-            <div v-if="!isClickSearch" @click="clickSearchFocus" style="height: 30px;width:200px;
+  <div class="right-content-container">
+    <div class="header-search">
+      <div class="input-search">
+        <div class="input-search-mask">
+          <div v-if="!isClickSearch" @click="clickSearchFocus" style="height: 30px;width:200px;
              border-radius: 10px;;color: white">输入想看的视频
-            </div>
-            <input style="border-radius: 20px;height: 35px" v-if="isClickSearch" ref="searchInputRef"
-                   v-model="queryParam.keyword" @blur="onblurInput"/>
           </div>
-          <div class="search-submit">
-            <button class="search-btn" @click="clickSearch">搜索
-            </button>
-          </div>
+          <input style="border-radius: 20px;height: 35px" v-if="isClickSearch" ref="searchInputRef"
+                 v-model="queryParam.keyword" @blur="onblurInput"/>
         </div>
-        <a href="#">
-          <div class="left-side-menu" @click="()=>{
+        <div class="search-submit">
+          <button class="search-btn" @click="clickSearch">搜索
+          </button>
+        </div>
+      </div>
+      <a href="#">
+        <div class="left-side-menu" @click="()=>{
             uploadDialogVisible = !uploadDialogVisible
           }">
-            上传视频
-          </div>
-        </a>
-        <a href="#">
-          <div class="left-side-menu" @click="clickLogin">
-            登录
-          </div>
-        </a>
-      </div>
-      <div style="margin:10px">
-        <van-swipe :vertical="true" style="height: 90vh;"
-                   ref="swipeRef"
-                   @change="onSwipeChange"
-                   :show-indicators="false"
-                   :loop="false" lazy-render
-        >
-          <!-- 每一次都去创建一个视频播放器-->
-          <van-swipe-item
-              v-for="(item, i) in playDatas.videos"
-              :key="playDatas.videos[i].videoUuid">
-            <video-page
-                :video-info="playDatas.videos[i]"
-                :video-index="playDatas.videos[i].videoUuid"
-                ref="videoInfo">
-              <!--视频右边竖线icon区域-->
-              <template v-slot:right-menu>
-                <div class="right-item-icon">
-                  <div>
-                    <van-image
-                        @click="clickAuthorFunc(playDatas.videos[i])"
-                        round
-                        width="40px"
-                        height="40px"
-                        src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
-                    >
-                    </van-image>
-                    <div style="position: absolute;right: 0px;top:50px">
-                      <van-icon name="add" size="20"/>
-                    </div>
+          上传视频
+        </div>
+      </a>
+      <a href="#">
+        <div class="left-side-menu" @click="clickLogin">
+          登录
+        </div>
+      </a>
+    </div>
+    <div style="margin:10px">
+      <van-swipe :vertical="true" style="height: 90vh;"
+                 ref="swipeRef"
+                 @change="onSwipeChange"
+                 :show-indicators="false"
+                 :loop="false"
+      >
+        <!-- 每一次都去创建一个视频播放器-->
+        <van-swipe-item
+            v-for="(item, i) in playDatas.videos"
+            :key="playDatas.videos[i].videoUuid">
+          <video-page
+              :video-info="playDatas.videos[i]"
+              :video-index="playDatas.videos[i].videoUuid"
+              ref="videoInfo">
+            <!--视频右边竖线icon区域-->
+            <template v-slot:right-menu>
+              <div class="right-item-icon">
+                <div>
+                  <van-image
+                      @click="clickAuthorFunc(playDatas.videos[i])"
+                      round
+                      width="40px"
+                      height="40px"
+                      src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
+                  >
+                  </van-image>
+                  <div style="position: absolute;right: 0px;top:50px">
+                    <van-icon name="add" size="20"/>
                   </div>
                 </div>
-                <div class="right-item-icon">
-                  <!-- 喜欢-->
-                  <van-icon name="like" size="40" badge="9"/>
-                </div>
-                <!-- 评论-->
-                <div class="right-item-icon">
-                  <van-icon name="chat" size="40" badge="9" @click="clickCommentFunc(playDatas.videos[i])"/>
-                </div>
-                <!-- 收藏-->
-                <div class="right-item-icon">
-                  <van-icon name="star" size="40" badge="9"/>
-                </div>
-                <!-- 分享-->
-                <div class="right-item-icon">
-                  <van-icon name="share" size="40" badge="9" @click="clickShareFunc(playDatas.videos[i])"/>
-                </div>
-              </template>
-              <template v-slot:video-footer>
-                <div class="video-title">
-                  @老王视频
-                </div>
-                <div class="video-desc">
-                  阿里云发布通义千问2.0，性能超GPT-3.5，加速追赶GPT-4
-                </div>
-              </template>
-            </video-page>
-          </van-swipe-item>
+              </div>
+              <div class="right-item-icon">
+                <!-- 喜欢-->
+                <van-icon name="like" size="40" badge="9"/>
+              </div>
+              <!-- 评论-->
+              <div class="right-item-icon">
+                <van-icon name="chat" size="40" badge="9" @click="clickCommentFunc(playDatas.videos[i])"/>
+              </div>
+              <!-- 收藏-->
+              <div class="right-item-icon">
+                <van-icon name="star" size="40" badge="9"/>
+              </div>
+              <!-- 分享-->
+              <div class="right-item-icon">
+                <van-icon name="share" size="40" badge="9" @click="clickShareFunc(playDatas.videos[i])"/>
+              </div>
+            </template>
+            <template v-slot:video-footer>
+              <div class="video-title">
+                @老王视频
+              </div>
+              <div class="video-desc">
+                阿里云发布通义千问2.0，性能超GPT-3.5，加速追赶GPT-4
+              </div>
+            </template>
+          </video-page>
+        </van-swipe-item>
 
-        </van-swipe>
-      </div>
+      </van-swipe>
     </div>
-
   </div>
+
   <!--登录-->
   <login-page :dialog-visible="loginDialogVisible" @onCloseDialog="()=>{
      loginDialogVisible = false
@@ -166,6 +149,9 @@ storeToRefs(playerStore)
 storeToRefs(videoCategory)
 
 
+
+
+
 let isClickSearch = ref(false);
 
 const searchInputRef = ref(null);
@@ -200,7 +186,7 @@ const isFirstRender = ref(true)
 
 //查询参数
 let queryParam = reactive({
-  keyword: ""
+  "keyword": ""
 })
 
 
@@ -212,7 +198,7 @@ let playDatas = reactive({videos: []})
 
 
 onMounted(async () => {
-  window.addEventListener("keydown", handleKeyUp, true);
+  // window.addEventListener("keydown", handleKeyUp, true);
   await handleSearch({categoryId: null, keyword: null})
 })
 
@@ -241,7 +227,6 @@ const handleSearch = async (option = {}) => {
     })
     return;
   }
-  playerStore.clearPlayer()
   //切换完毕需要将索引重置为0
   playDatas.videos = [];
   playDatas.videos = records
@@ -256,7 +241,7 @@ const currentChangeIndex = ref(0);
 
 const onSwipeChange = (index) => {
   console.log('onSwipeChange', index)
-  playerStore.playVideo(index, isFirstRender.value)
+  playerStore.playVideo(index,isFirstRender.value)
   currentChangeIndex.value = index
 }
 
@@ -273,11 +258,6 @@ const handleKeyUp = (event) => {
   } else if (event.key === 'ArrowDown') { // 按下箭头向下键时的处理逻辑
     swipeRefValue.next()
     isPrev.value = true
-  }
-  //如果空格
-  if (event.key === ' ') {
-    console.log('空格', currentChangeIndex.value)
-    playerStore.playVideo(currentChangeIndex.value, isFirstRender.value)
   }
 }
 
@@ -341,7 +321,6 @@ const goCategoryVideo = (item) => {
   isFirstRender.value = false;
   console.log('切换到第一个')
   swipeRef.value.swipeTo(0)
-  console.log('goCategoryVideo', playerStore.xgPlayer)
 }
 
 const clickSearchFocus = () => {

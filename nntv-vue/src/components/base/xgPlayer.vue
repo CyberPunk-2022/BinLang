@@ -1,5 +1,5 @@
 <template>
-  <div class="mask-filter" style="position: absolute"/>
+  <div class="mask-filter"  style="position: absolute"/>
   <div>
     <div :id="id" class="v-xg-video"/>
 
@@ -17,18 +17,18 @@
       <div class="vide-progress">
 
         <div style="display: inline-block; margin-right: 10px">
-          <!-- 给元素绑定一个data-->
-          <el-button type="primary" v-on:indexId="props.id" @click="playOrPause">
-            <van-icon name="play" v-if="isPaused" size="10"/>
-            <van-icon name="pause" v-if="!isPaused" size="10"/>
+          <el-button style="border-radius: 20px;width: 40px;height: 40px;background-color: #4d5856" type="primary"
+                     v-on:indexId="props.id" @click="playOrPause">
+            <van-icon name="play" v-if="isPaused" size="15"/>
+            <van-icon name="pause" v-if="!isPaused" size="15"/>
           </el-button>
         </div>
-        <div style="width: 90%;display: inline-block;">
+        <div style="display: inline-block; margin-right: 20px;width: 20px;height: 30px;">
+          {{ currentTime }}/{{ duration }}
+        </div>
+        <div style="width: 91%;display: inline-block;">
           <van-slider v-model="currentTime" @change="changeProgress" bar-height="4px"
                       active-color="#ee0a24">
-            <template #button>
-              <div class="custom-button">{{ currentTime }}</div>
-            </template>
           </van-slider>
         </div>
 
@@ -59,6 +59,8 @@ let isPaused = ref(true)
 
 
 let currentTime = ref(0)
+
+let duration = ref(0)
 
 const props = defineProps({
   id: {
@@ -103,6 +105,12 @@ onMounted(() => {
   initPlayer();
 });
 
+
+/**
+ * 鼠标时间上下监听
+ * @param event
+ */
+
 // 初始化西瓜视频
 const initPlayer = () => {
   let config = {
@@ -118,26 +126,22 @@ const initPlayer = () => {
     keyShortcut: false, //禁用所有快捷键
     ignores: ['definition', 'error', 'fullscreen', 'i18n', 'pause', 'loading', 'play', 'time', 'mobile', 'pc', 'poster', 'progress', 'replay', 'volume']
   }
-
   player = new Player(config);
-  player.pause()
+
 
   //js去掉百分号
-
   player.on(Events.TIME_UPDATE, () => {
-    // console.log('当前时间' + player.currentTime)
-    // console.log('视频时长' + player.duration)
     //转成整数
     currentTime.value = parseInt(player.currentTime)
+    duration.value = parseInt(player.duration)
     // console.log('百分比' + currentTime.value)
   })
 
-  //把播放器存入到store中去做播放暂停以及其他操作
-  playerStore.addPlayer(props.id, player);
-
+  /**
+   * 监听播放
+   */
   player.on(Events.PLAYING, () => {
-    //正在播放回调
-    console.log('正在播放')
+    //正在播放回调// playerStore.currentPlayer = player
     isPaused.value = false
   })
 
@@ -146,6 +150,9 @@ const initPlayer = () => {
     console.log('暂停')
     isPaused.value = true
   })
+  console.log('生成播放器', config)
+  //把播放器存入到store中去做播放暂停以及其他操作
+  playerStore.addPlayer(props.id, player);
 
 };
 

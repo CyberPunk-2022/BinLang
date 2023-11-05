@@ -3,11 +3,12 @@
   <div>
     <xg-player :id="prop.videoIndex"
                :video-url="videoInfo.url"
-               :poster="videoInfo.poster">
+               :poster="videoInfo.poster"
+               :key="prop.videoIndex">
 
       <template v-for="(item, key, i) in slots"
                 :key="i" v-slot:[key]="{ record, rowIndex, column }">
-        <slot  :name="key"/>
+        <slot :name="key"/>
       </template>
     </xg-player>
   </div>
@@ -17,7 +18,7 @@
 
 <script setup>
 
-import { useSlots} from "vue";
+import {useSlots} from "vue";
 import 'xgplayer/dist/index.min.css';
 import XgPlayer from "../base/xgPlayer.vue";
 

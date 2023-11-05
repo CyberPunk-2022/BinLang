@@ -11,7 +11,13 @@ export function saveVideo(param) {
     return http.post("/videoManager/saveVideo", param)
 }
 
+/**
+ * 上传文件
+ * @param file
+ * @param uploadProgressCallback
+ * @returns {Promise<unknown>}
+ */
 
-export function uploadFile(file) {
-    return http.post("/videoManager/upload", file)
+export function uploadFileToServer(file, uploadProgressCallback) {
+    return http.uploadFile("/videoManager/upload", file, uploadProgressCallback)
 }
