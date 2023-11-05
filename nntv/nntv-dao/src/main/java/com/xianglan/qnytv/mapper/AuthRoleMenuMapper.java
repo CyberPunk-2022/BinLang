@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper
-public interface AuthRoleMenuMapper extends BaseMapper<Comment> {
+public interface AuthRoleMenuMapper extends BaseMapper<AuthRoleMenu> {
 
     List<AuthRoleMenu> getAuthRoleMenusByRoleIds(Set<Long> roleIdSet);
 }

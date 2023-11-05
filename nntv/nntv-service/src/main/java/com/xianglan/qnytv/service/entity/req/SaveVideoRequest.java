@@ -15,5 +15,6 @@ public class SaveVideoRequest {
     private String title; // 视频标题
 
     private String videoType; // 视频类型
+    private String videoDesc;//视频描述
 
 }

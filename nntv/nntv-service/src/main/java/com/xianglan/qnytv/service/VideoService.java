@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +24,16 @@ public class VideoService {
 
     @Autowired
     private UserMapper userMapper;
-    public List<VideoVo> selectVideoListByUserId(Long userId){
-        if(userId==null){
+
+    public List<VideoVo> selectVideoListByUserId(Long userId) {
+        if (userId == null) {
             throw new ConditionException("id参数不合法");
         }
-        List<VideoPo> videoEntityList=videoMapper.selectVideosByUserId(userId);
-        List<VideoVo> videoVoList=new ArrayList<>();
+        List<VideoPo> videoEntityList = videoMapper.selectVideosByUserId(userId);
+        List<VideoVo> videoVoList = new ArrayList<>();
         for (VideoPo videoEntity : videoEntityList) {
             VideoVo videoVo = new VideoVo();
-            BeanUtils.copyProperties(videoEntity,videoVo);
+            BeanUtils.copyProperties(videoEntity, videoVo);
             videoVo.setAuthor(userMapper.getUserById(userId));
             videoVoList.add(videoVo);
         }

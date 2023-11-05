@@ -43,7 +43,7 @@ public class VideoPo {
     /**
      * 更新时间
      */
-    private Date publishTime;
+    private Date updateTime;
     /**
      * 0正常，1已删除
      */

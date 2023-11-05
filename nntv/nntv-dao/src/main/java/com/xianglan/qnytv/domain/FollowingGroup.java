@@ -5,8 +5,9 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+
 @Data
-@TableName("t_file")
+@TableName("t_following_group")
 public class FollowingGroup {
     private Long id;
 
