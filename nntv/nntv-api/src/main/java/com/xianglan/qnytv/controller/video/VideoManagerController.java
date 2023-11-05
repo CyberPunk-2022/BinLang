@@ -6,8 +6,10 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import com.xianglan.qnytv.domain.annotation.SkipAuth;
 import com.xianglan.qnytv.domain.base.JsonResponse;
 import com.xianglan.qnytv.domain.VideoPo;
+import com.xianglan.qnytv.domain.vo.VideoVO;
 import com.xianglan.qnytv.service.entity.req.GetVideoListRequest;
 import com.xianglan.qnytv.service.VideoService;
 import com.xianglan.qnytv.service.entity.req.SaveVideoRequest;
@@ -52,8 +54,9 @@ public class VideoManagerController {
      * @return
      */
     @RequestMapping("/getPageList")
-    public JsonResponse<Page<VideoPo>> getPageList(@RequestBody GetVideoListRequest request) {
-        Page<VideoPo> page = videoService.getPageList(request);
+    @SkipAuth
+    public JsonResponse<Page<VideoVO>> getPageList(@RequestBody GetVideoListRequest request) {
+        Page<VideoVO> page = videoService.getPageList(request);
         return new JsonResponse<>(page);
     }
 
@@ -66,7 +69,6 @@ public class VideoManagerController {
 
     /**
      * 上传视频
-     *
      * @param file 文件
      * @return
      */

@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class GetVideoListRequest {
 
-    private Integer page;
+    private Integer page=1;
 
-    private Integer pageSize;
+    private Integer pageSize=10;
 
     private String keyword;
 }

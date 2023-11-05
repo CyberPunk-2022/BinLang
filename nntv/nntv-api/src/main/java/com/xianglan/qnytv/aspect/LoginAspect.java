@@ -26,6 +26,8 @@ import java.lang.reflect.Method;
 @Slf4j
 public class LoginAspect {
 
+    public static final String X_ACCESS_TOKEN = "X-Access-Token";
+
 
     @Before("execution(* com.xianglan.qnytv.controller.*.*(..))")
     public void point(JoinPoint joinPoint) {
@@ -34,7 +36,7 @@ public class LoginAspect {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
 
-        String token = request.getHeader("X-Access-Token");
+        String token = request.getHeader(X_ACCESS_TOKEN);
         //查不到token就表示登录失败
         Boolean existToken = existToken(token);
         boolean skipAuth = isSkipAuth(joinPoint);

@@ -56,4 +56,12 @@ public class VideoPo {
      * 评论数
      */
     private Long comments;
+    /**
+     * 主要分类
+     */
+    private String mainCategoryId;
+    /**
+     * 子分类ids
+     */
+    private String childCategoryIds;
 }
