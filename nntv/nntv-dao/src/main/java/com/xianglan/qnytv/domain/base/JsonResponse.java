@@ -11,6 +11,9 @@ public class JsonResponse<T> {
     private String msg;
 
     private T data;
+    public JsonResponse(){
+
+    }
 
     public JsonResponse(String code, String msg) {
         this.code = code;
@@ -41,6 +44,12 @@ public class JsonResponse<T> {
 
     public static JsonResponse<String> fail(String errorMsg) {
         return new JsonResponse<>(StatusEnum.FAIL.getCode(), errorMsg);
+    }
+
+    public static JsonResponse<Object> success(Object data) {
+        JsonResponse<Object> response = new JsonResponse<>();
+        response.setData(data);
+        return response;
     }
 
     public void setCode(String code) {
