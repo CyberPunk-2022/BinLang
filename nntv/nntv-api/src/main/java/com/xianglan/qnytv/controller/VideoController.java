@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/video")
+@Deprecated
 public class VideoController {
     @Autowired
     private VideoService videoService;

@@ -11,7 +11,8 @@ public class JsonResponse<T> {
     private String msg;
 
     private T data;
-    public JsonResponse(){
+
+    public JsonResponse() {
 
     }
 
@@ -48,6 +49,8 @@ public class JsonResponse<T> {
 
     public static JsonResponse<Object> success(Object data) {
         JsonResponse<Object> response = new JsonResponse<>();
+        response.setCode(StatusEnum.SUCCESS.getCode());
+        response.setMsg(StatusEnum.SUCCESS.getMsg());
         response.setData(data);
         return response;
     }

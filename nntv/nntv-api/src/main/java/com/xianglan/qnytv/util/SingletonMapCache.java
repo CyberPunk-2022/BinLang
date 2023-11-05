@@ -33,6 +33,13 @@ public class SingletonMapCache {
         return cache.get(key);
     }
 
+    public Boolean containsKey(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return cache.containsKey(key);
+    }
+
     public void remove(String key) {
         cache.remove(key);
     }

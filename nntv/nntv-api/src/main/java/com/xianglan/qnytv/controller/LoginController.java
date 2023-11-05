@@ -1,5 +1,6 @@
 package com.xianglan.qnytv.controller;
 
+import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.jwt.JWT;
 import com.xianglan.qnytv.domain.User;
@@ -39,15 +40,26 @@ public class LoginController {
     @PostMapping("/loginOrRegister")
     public JsonResponse<Object> login(String phone, String veryCode) {
         User user = userMapper.getUserByPhone(phone);
-        if (ObjectUtils.isEmpty(user)) {
+        boolean isPhone = PhoneUtil.isPhone(phone);
+        if (ObjectUtils.isEmpty(user) && !isPhone) {
             return new JsonResponse<>(StatusEnum.FAIL.getCode(), StatusEnum.FAIL.getMsg());
         } else {
             //todo 如果是注册的话校验一下发送的短信验证码
             //这里默认不发送，只要是符合是手机号的直接返回token
-            Map<String, String> res = new HashMap<>();
+
             String token = RandomUtil.randomString(32);
+            //是手机号且这个用户不存在
+            if (isPhone && ObjectUtils.isEmpty(user)) {
+                user = new User();
+                user.setPhone(phone);
+                user.setPassword(token); //todo 先存个token
+                userMapper.insert(user);
+            }
+
+            Map<String, String> res = new HashMap<>();
             res.put("token", token);
-            SingletonMapCache.getInstance().put(token, token);
+            // 存入缓存中
+            SingletonMapCache.getInstance().put(token, user.getId());
             return JsonResponse.success(res);
         }
     }
