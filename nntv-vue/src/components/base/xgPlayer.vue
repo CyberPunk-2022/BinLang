@@ -27,7 +27,7 @@
           {{ currentTime }}/{{ duration }}
         </div>
         <div style="width: 91%;display: inline-block;">
-          <van-slider v-model="currentTime" @change="changeProgress" bar-height="4px"
+          <van-slider v-model="currentTime" :max="duration" @change="changeProgress" bar-height="4px"
                       active-color="#ee0a24">
           </van-slider>
         </div>
@@ -121,8 +121,10 @@ const initPlayer = () => {
     "plugins": [],
     "autoplay": false,
     "closeVideoClick": true,
-    height: window.innerHeight - 200, //视频高度
-    fitVideoSize: 'auto',
+    //todo 想让
+     height: window.innerHeight - 300, //视频高度
+     width:window.innerWidth-300,
+    // fitVideoSize: 'auto',
     keyShortcut: false, //禁用所有快捷键
     ignores: ['definition', 'error', 'fullscreen', 'i18n', 'pause', 'loading', 'play', 'time', 'mobile', 'pc', 'poster', 'progress', 'replay', 'volume']
   }
@@ -182,7 +184,7 @@ const playOrPause = () => {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #18a472;
+  background-color: #282a2a;
   backdrop-filter: blur(40px);
   border: 1px solid #1d2322;
   border-radius: 20px;

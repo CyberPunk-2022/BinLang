@@ -125,6 +125,7 @@ const submit = (ref) => {
         postUrl: '',
         title: formData.title,
         categoryId: formData.categoryId,
+        videoDesc: formData.videoDesc,
         //todo 其他的继续加
       }
 

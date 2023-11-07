@@ -12,6 +12,7 @@ public class JsonResponse<T> {
 
     private T data;
 
+
     public JsonResponse() {
 
     }
@@ -20,6 +21,7 @@ public class JsonResponse<T> {
         this.code = code;
         this.msg = msg;
     }
+
 
     public JsonResponse(T data) {
         this.data = data;
@@ -35,24 +37,25 @@ public class JsonResponse<T> {
         return new JsonResponse<>(data);
     }
 
-    public static JsonResponse<String> fail() {
-        return new JsonResponse<>(StatusEnum.FAIL.getCode(), "失败");
-    }
-
-    public static JsonResponse<String> fail(String code, String msg) {
-        return new JsonResponse<>(code, msg);
-    }
-
-    public static JsonResponse<String> fail(String errorMsg) {
-        return new JsonResponse<>(StatusEnum.FAIL.getCode(), errorMsg);
-    }
-
     public static JsonResponse<Object> success(Object data) {
         JsonResponse<Object> response = new JsonResponse<>();
         response.setCode(StatusEnum.SUCCESS.getCode());
         response.setMsg(StatusEnum.SUCCESS.getMsg());
         response.setData(data);
         return response;
+    }
+
+    public static JsonResponse<String> fail() {
+        return new JsonResponse<>(StatusEnum.FAIL.getCode(), "失败");
+    }
+
+    public static JsonResponse<String> fail(String errorMsg) {
+        return new JsonResponse<>(StatusEnum.FAIL.getCode(), errorMsg);
+    }
+
+
+    public static JsonResponse<String> fail(String code, String msg) {
+        return new JsonResponse<>(code, msg);
     }
 
     public void setCode(String code) {

@@ -1,12 +1,16 @@
 package com.xianglan.qnytv.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.util.Date;
-@TableName("t_comment")
+
+@TableName("t_video_comment")
+@Data
 public class Comment {
     private Long id;
-    private Long videoId;
+
+    private Long relativeId;
     /**
      * 作者id
      */
@@ -20,6 +24,8 @@ public class Comment {
      * 回复的用户id
      */
     private Long replyUserId;
+
+    private Long rootId;
 
     private Date createTime;
 }

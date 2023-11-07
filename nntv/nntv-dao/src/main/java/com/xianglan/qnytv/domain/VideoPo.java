@@ -1,10 +1,12 @@
 package com.xianglan.qnytv.domain;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@TableName("t_video")
 public class VideoPo {
     private Long id;
     /**
@@ -64,4 +66,8 @@ public class VideoPo {
      * 子分类ids
      */
     private String childCategoryIds;
+    /**
+     * 描述信息
+     */
+    private String description;
 }

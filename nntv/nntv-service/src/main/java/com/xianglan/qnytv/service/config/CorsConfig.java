@@ -40,6 +40,7 @@ public class CorsConfig implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
+
 //    public void doFilter(ServletRequest request, ServletResponse response,
 //                         FilterChain chain) throws IOException, ServletException {
 //        HttpServletResponse httpResponse = (HttpServletResponse) response;

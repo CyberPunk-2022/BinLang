@@ -1,4 +1,3 @@
-
 package com.xianglan.qnytv.exception;
 
 public class AuthException extends RuntimeException {

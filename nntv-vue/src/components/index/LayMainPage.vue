@@ -40,8 +40,10 @@
           </div>
         </a>
         <a href="#">
-          <div class="left-side-menu" @click="clickLogin">
+          <div v-if="!userInfoStore.getUserInfo().id" class="left-side-menu" @click="clickLogin">
             登录
+          </div>
+          <div v-if="userInfoStore.getUserInfo().id" class="left-side-menu" @click="clickUserCenter">个人中心
           </div>
         </a>
       </div>
@@ -69,7 +71,7 @@
                         round
                         width="40px"
                         height="40px"
-                        src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
+                        :src="playDatas.videos[i].userInfo.avatar"
                     >
                     </van-image>
                     <div style="position: absolute;right: 0px;top:50px">
@@ -79,11 +81,13 @@
                 </div>
                 <div class="right-item-icon">
                   <!-- 喜欢-->
-                  <van-icon name="like" size="40" badge="9"/>
+                  <van-icon name="like" size="40" :badge="playDatas.videos[i].stars"
+                            @click="clickLike(playDatas.videos[i])"/>
                 </div>
                 <!-- 评论-->
                 <div class="right-item-icon">
-                  <van-icon name="chat" size="40" badge="9" @click="clickCommentFunc(playDatas.videos[i])"/>
+                  <van-icon name="chat" size="40" :badge="playDatas.videos[i].commentNum"
+                            @click="clickCommentFunc(playDatas.videos[i])"/>
                 </div>
                 <!-- 收藏-->
                 <div class="right-item-icon">
@@ -96,10 +100,10 @@
               </template>
               <template v-slot:video-footer>
                 <div class="video-title">
-                  @老王视频
+                  @{{ playDatas.videos[i].authorName }}
                 </div>
                 <div class="video-desc">
-                  阿里云发布通义千问2.0，性能超GPT-3.5，加速追赶GPT-4
+                  {{ playDatas.videos[i].title }}
                 </div>
               </template>
             </video-page>
@@ -121,22 +125,30 @@
   }"/>
 
   <!--  记着把作品视频Id传过去-->
-  <comment-page :dialog-visible="commentDrawerVisible" @onCloseDialog="()=>{
+  <comment-page ref="commentPageRef" :dialog-visible="commentDrawerVisible" :video-Info="videoItemInfo" @onCloseDialog="()=>{
      commentDrawerVisible = false
   }"/>
 
 
   <!--  记着把作品视频Id传过去-->
-  <author-page :dialog-visible="authorDrawerVisible" @onCloseDialog="()=>{
+  <author-page ref="authorPageRef"
+               :dialog-visible="authorDrawerVisible"
+               :extra-info="videoItemInfo"
+               :open="()=>{
+                  authorDrawerVisible = true
+               }"
+               @onCloseDialog="()=>{
      authorDrawerVisible = false
   }"/>
 
   <!-- 分享页面-->
-  <share-page :dialog-visible="shareModalVisible" @onCloseDialog="()=>{
+  <share-page
+      :dialog-visible="shareModalVisible"
+      @onCloseDialog="()=>{
     shareModalVisible = false
   }"/>
 
-  <search-page :dialog-visible="visibleModalSearch" @onCloseDialog="()=>{
+  <search-page :dialog-visible="visibleModalSearch" ref="searchPageRef" @onCloseDialog="()=>{
     visibleModalSearch =false
   }"/>
 
@@ -157,9 +169,15 @@ import SharePage from "../common/sharePage.vue";
 import SearchPage from "../common/searchPage.vue";
 import {useVideoCategoryStore} from "../store/videoCategory.js";
 import DialogLogin from "../base/LoginDialog.js";
-import {getPageList} from "../../api/VideoMangerApi.js";
-import {ElMessage} from "element-plus";
+import {getPageList, like} from "../../api/VideoMangerApi.js";
+import {ElLoading, ElMessage} from "element-plus";
+import Cookies from "js-cookie";
+import {useUserInfoStore} from "../store/userInfo.js";
 
+
+import UserInfoPage from "../base/UserInfoCenter.js";
+
+const userInfoStore = useUserInfoStore()
 let playerStore = usePlayerStore();
 let videoCategory = useVideoCategoryStore();
 storeToRefs(playerStore)
@@ -170,9 +188,18 @@ let isClickSearch = ref(false);
 
 const searchInputRef = ref(null);
 
+const searchPageRef = ref(null);
+
+const commentPageRef = ref(null);
+
+const authorPageRef = ref(null);
+
 //todo 这些都可以改造成函数式 调用，让代码变得更简洁
 // 评论抽屉是否展示
 let commentDrawerVisible = ref(false);
+
+// 评论的视频信息
+let videoItemInfo = reactive({});
 
 
 // 作者抽屉是否展示
@@ -298,8 +325,9 @@ const onblurInput = () => {
  * 点击评论页面
  * @param item
  */
-const clickCommentFunc = (item) => {
-  console.log(item)
+const clickCommentFunc = async (item) => {
+  console.log('item', item)
+  await commentPageRef.value.clickCommentPage(item)
   commentDrawerVisible.value = true
 }
 
@@ -307,9 +335,13 @@ const clickCommentFunc = (item) => {
  * 点击作者页面
  * @param item
  */
-const clickAuthorFunc = (item) => {
+const clickAuthorFunc = async (item) => {
+  let service = ElLoading.service({fullscreen: false, text: '正在加载作者主页', background: 'rgba(0, 0, 0, 0)'});
+
   console.log(item)
+  await authorPageRef.value.openAuthorPage(item)
   authorDrawerVisible.value = true
+  service.close()
 }
 
 /**
@@ -324,9 +356,20 @@ const clickShareFunc = (item) => {
 /**
  * 点击搜索
  */
-const clickSearch = () => {
+const clickSearch = async () => {
   //todo 执行搜索执行的是searchPage子页面的方法，不要在这里写，这个页面要干净利索
+  let searchRes = await searchPageRef.value.clickSearch(queryParam);
+  if (searchRes.length === 0) {
+    ElMessage({
+      showClose: true,
+      message: '没搜索到结果',
+      center: true,
+      type: 'warning'
+    })
+    return
+  }
   visibleModalSearch.value = true
+
 }
 
 /**
@@ -355,7 +398,24 @@ const clickSearchFocus = () => {
 const clickLogin = () => {
   DialogLogin(true);
 }
+/**
+ * 函数式弹出登录框
+ */
+const clickUserCenter = () => {
+  UserInfoPage(true);
+}
 
+
+const clickLike = async (item) => {
+
+  let param = {
+    videoId: item.videoId,
+  }
+
+  let res = await like(param);
+  item.stars = res.data.data.stars
+  console.log('resresres', res)
+}
 
 </script>
 

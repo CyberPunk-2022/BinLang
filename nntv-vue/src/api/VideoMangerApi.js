@@ -7,8 +7,17 @@ export function getPageList(param) {
     return http.post("/videoManager/getPageList", param)
 }
 
+
+export function getAuthorPageList(param) {
+    return http.post("/videoManager/getAuthorPageList", param)
+}
+
 export function saveVideo(param) {
     return http.post("/videoManager/saveVideo", param)
+}
+
+export function like(param) {
+    return http.post("/videoManager/like", param)
 }
 
 /**

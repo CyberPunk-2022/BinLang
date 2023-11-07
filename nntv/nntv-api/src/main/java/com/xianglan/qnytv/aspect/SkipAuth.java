@@ -1,4 +1,4 @@
-package com.xianglan.qnytv.domain.annotation;
+package com.xianglan.qnytv.aspect;
 
 import java.lang.annotation.*;
 

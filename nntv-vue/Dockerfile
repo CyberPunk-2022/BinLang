@@ -10,7 +10,8 @@ MAINTAINER csdn 我来秋风落叶 shisheng@live.com
 #设置时区
 ENV TZ=Asia/Shanghai
 
-
+#git仓库下载 配置成你自己的git地址
+#RUN git clone https://gitee.com/io123/mobile-ui.git /app
 
 # 设置工作目录
 WORKDIR /app

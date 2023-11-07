@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper
-public interface AuthRoleElementOperationMapper  extends BaseMapper<AuthRoleElementOperation> {
+public interface AuthRoleElementOperationMapper extends BaseMapper<AuthRoleElementOperation> {
 
     List<AuthRoleElementOperation> getRoleElementOperationsByRoleIds(@Param("roleIdSet") Set<Long> roleIdSet);
 }

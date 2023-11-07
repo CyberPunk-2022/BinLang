@@ -1,5 +1,6 @@
 package com.xianglan.qnytv.service.entity.req;
 
+
 import lombok.Data;
 
 /**
@@ -8,9 +9,14 @@ import lombok.Data;
 @Data
 public class GetVideoListRequest {
 
-    private Integer page=1;
+    private Integer page = 1;
 
-    private Integer pageSize=10;
+    private Integer pageSize = 10;
 
     private String keyword;
+
+    private String categoryId;
+
+    private String authorId;
+
 }

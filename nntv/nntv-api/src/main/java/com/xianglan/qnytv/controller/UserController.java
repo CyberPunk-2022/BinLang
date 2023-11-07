@@ -1,10 +1,10 @@
 package com.xianglan.qnytv.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xianglan.qnytv.domain.base.JsonResponse;
-import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
+import com.xianglan.qnytv.domain.base.JsonResponse;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.service.UserFollowingService;
 import com.xianglan.qnytv.service.UserService;
 import com.xianglan.qnytv.service.util.RSAUtil;
@@ -19,6 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequestMapping("userInfo")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -29,14 +30,10 @@ public class UserController {
     @Autowired
     private UserFollowingService userFollowingService;
 
-    @GetMapping("/users")
-    public JsonResponse<User> getUserInfo(){
-        Long userId = userSupport.getCurrentUserId();
-        User user = userService.getUserInfo(userId);
-        return new JsonResponse<>(user);
-    }
+
     // 这种认证方式有安全漏洞，先不用了
     @GetMapping("/rsa-pks")
+    @Deprecated
     public JsonResponse<String> getRsaPublicKey(){
         return new JsonResponse<>(RSAUtil.getPublicKeyStr());
     }
@@ -61,16 +58,7 @@ public class UserController {
         return new JsonResponse<>(token);
     }
 
-    /**
-     * 更新用户信息
-     */
-    @PutMapping("/user-infos")
-    public JsonResponse<String> updateUserInfos(@RequestBody UserInfo userInfo){
-        Long userId = userSupport.getCurrentUserId();
-        userInfo.setUserId(userId);
-        userService.updateUserInfos(userInfo);
-        return JsonResponse.success();
-    }
+
     @PutMapping("/users")
     public JsonResponse<String> updateUsers(@RequestBody User user) throws Exception{
         Long userId = userSupport.getCurrentUserId();

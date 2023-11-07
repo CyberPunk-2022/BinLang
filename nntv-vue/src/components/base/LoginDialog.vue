@@ -30,7 +30,11 @@
 
 <script setup>
 import {reactive, ref} from "vue";
-import {loginOrRegister} from "../../api/Account.js";
+import {getUserInfo, loginOrRegister} from "../../api/Account.js";
+import Cookies from "js-cookie";
+import {useUserInfoStore} from "../store/userInfo.js";
+
+const userInfoStore = useUserInfoStore()
 
 const formRef = ref(null)
 
@@ -65,9 +69,15 @@ const submitLogin = (ref) => {
       let res = await loginOrRegister(loginForm);
       console.log('res登录', res)
       let token = res.data.data.token;
-      localStorage.setItem("X-Access-Token", token)
-          //关闭弹窗
+      // localStorage.setItem("X-Access-Token", token)
+      //把值存到cookie中，过期7天
+      Cookies.set('X-Access-Token', token, {expires: 7})
+      //关闭弹窗
       props.clickClose()
+      let userInfoRes = await getUserInfo({})
+      console.log('userInfo', userInfoRes)
+      userInfoStore.addUserInfo(userInfoRes.data.data)
+      console.log('userInfoStore', userInfoStore.getUserInfo())
     } else {
       console.log('error submit!')
       return false

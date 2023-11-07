@@ -1,18 +1,28 @@
-package com.xianglan.qnytv.controller.video;
+package com.xianglan.qnytv.controller;
 
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import com.xianglan.qnytv.domain.annotation.SkipAuth;
-import com.xianglan.qnytv.domain.base.JsonResponse;
+import com.xianglan.qnytv.aspect.SkipAuth;
+import com.xianglan.qnytv.domain.UserInfo;
 import com.xianglan.qnytv.domain.VideoPo;
+import com.xianglan.qnytv.domain.base.JsonResponse;
+import com.xianglan.qnytv.domain.constant.StatusEnum;
+import com.xianglan.qnytv.domain.exception.ConditionException;
 import com.xianglan.qnytv.domain.vo.VideoVO;
+import com.xianglan.qnytv.mapper.CommentMapper;
+import com.xianglan.qnytv.mapper.UserInfoMapper;
+import com.xianglan.qnytv.service.UserService;
 import com.xianglan.qnytv.service.entity.req.GetVideoListRequest;
 import com.xianglan.qnytv.service.VideoService;
+import com.xianglan.qnytv.service.entity.req.LikeVideoReq;
 import com.xianglan.qnytv.service.entity.req.SaveVideoRequest;
+import com.xianglan.qnytv.support.UserSupport;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -28,6 +40,7 @@ import java.io.IOException;
  */
 @RequestMapping("/videoManager")
 @RestController
+@Slf4j
 public class VideoManagerController {
 
 
@@ -47,6 +60,10 @@ public class VideoManagerController {
     @Autowired
     private VideoService videoService;
 
+    @Autowired
+    private UserSupport support;
+
+
     /**
      * 获取视频列表
      *
@@ -60,19 +77,44 @@ public class VideoManagerController {
         return new JsonResponse<>(page);
     }
 
+    /**
+     * 获取视频列表
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getAuthorPageList")
+    @SkipAuth
+    public JsonResponse<Page<VideoVO>> getAuthorPageList(@RequestBody GetVideoListRequest request) {
+        Page<VideoVO> page = videoService.getPageList(request);
+        return new JsonResponse<>(page);
+    }
+
     @RequestMapping("/saveVideo")
     public JsonResponse<Void> saveVideo(@RequestBody SaveVideoRequest po) {
-        videoService.saveVideo(po);
+        po.setUserId(support.getCurrentUseUserId());
 
+        videoService.saveVideo(po);
         return new JsonResponse<>(null);
+    }
+
+
+    @RequestMapping("/like")
+    public JsonResponse<VideoPo> like(@RequestBody LikeVideoReq req) {
+        Long currentUseUserId = support.getCurrentUseUserId();
+        req.setUserId(currentUseUserId.toString());
+        VideoPo po = videoService.likeVideo(req);
+        return new JsonResponse<>(po);
     }
 
     /**
      * 上传视频
+     *
      * @param file 文件
      * @return
      */
     @RequestMapping("/upload")
+    @SkipAuth
     public JsonResponse<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return JsonResponse.fail();
@@ -82,6 +124,8 @@ public class VideoManagerController {
         Configuration cfg = new Configuration(Region.region1());
         cfg.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;// 指定分片上传版本
         //...其他参数参考类注释
+        cfg.resumableUploadAPIV2BlockSize = 1024 * 1024; //1MB开始分片
+        cfg.resumableUploadMaxConcurrentTaskCount = 10; //十个并发
 
         UploadManager uploadManager = new UploadManager(cfg);
 
@@ -93,10 +137,21 @@ public class VideoManagerController {
         String upToken = auth.uploadToken(bucketName);
 
         try {
-            uploadManager.put(file.getBytes(), key, upToken);
-            System.out.println("上传文件");
+
+            //创建临时文件夹
+            File tempFile = FileUtil.createTempFile();
+            //删除临时文件里所有文件
+            FileUtil.del(tempFile);
+            String path = tempFile.getPath() + File.separator + key;
+            byte[] fileBytes = file.getBytes();
+            //把fileBytes存入到临时文件夹
+            FileUtil.writeBytes(fileBytes, path);
+
+            uploadManager.put(path, key, upToken);
+            log.info("上传文件");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("上传文件失败", e);
+            throw new ConditionException(StatusEnum.FAIL.getCode(), StatusEnum.FAIL.getMsg());
         }
         String finalUrl = domainUrl + "/" + key;
         //todo 正式的时候删除以下代码，列表中获取临时的令牌

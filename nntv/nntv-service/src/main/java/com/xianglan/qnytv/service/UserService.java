@@ -1,13 +1,18 @@
 package com.xianglan.qnytv.service;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mysql.cj.util.StringUtils;
-import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.RefreshTokenDetail;
 import com.xianglan.qnytv.domain.User;
 import com.xianglan.qnytv.domain.UserInfo;
+import com.xianglan.qnytv.domain.base.PageResult;
 import com.xianglan.qnytv.domain.constant.UserConstant;
 import com.xianglan.qnytv.domain.exception.ConditionException;
+import com.xianglan.qnytv.mapper.UserInfoMapper;
 import com.xianglan.qnytv.mapper.UserMapper;
 import com.xianglan.qnytv.service.util.MD5Util;
 import com.xianglan.qnytv.service.util.RSAUtil;
@@ -23,6 +28,9 @@ import java.util.*;
 public class UserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     @Autowired
     private UserAuthService userAuthService;
@@ -53,11 +61,11 @@ public class UserService {
         userMapper.addUser(user);
         // 添加用户信息
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(user.getId())
-                .setNick(UserConstant.DEFAULT_NICK)
-                .setBirth(UserConstant.DEFAULT_BIRTH)
-                .setGender(UserConstant.GENDER_MALE)
-                .setCreateTime(now);
+        userInfo.setUserId(user.getId());
+        userInfo.setNick(UserConstant.DEFAULT_NICK);
+        userInfo.setBirth(UserConstant.DEFAULT_BIRTH);
+        userInfo.setGender(UserConstant.GENDER_MALE);
+        userInfo.setCreateTime(now);
         userMapper.addUserInfo(userInfo);
         // 添加用户默认权限角色
         userAuthService.addUserDefaultRole(user.getId());
@@ -67,26 +75,26 @@ public class UserService {
         return userMapper.getUserByPhone(phone);
     }
 
-    public String login(User user) throws Exception{
+    public String login(User user) throws Exception {
         String phone = user.getPhone() == null ? "" : user.getPhone();
         String email = user.getEmail() == null ? "" : user.getEmail();
-        if(StringUtils.isNullOrEmpty(phone) && StringUtils.isNullOrEmpty(email)){
+        if (StringUtils.isNullOrEmpty(phone) && StringUtils.isNullOrEmpty(email)) {
             throw new ConditionException("参数异常！");
         }
         User dbUser = userMapper.getUserByPhoneOrEmail(phone, email);
-        if(dbUser == null){
+        if (dbUser == null) {
             throw new ConditionException("当前用户不存在！");
         }
         String password = user.getPassword();
         String rawPassword;
-        try{
+        try {
             rawPassword = RSAUtil.decrypt(password);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ConditionException("密码解密失败！");
         }
         String salt = dbUser.getSalt();
         String md5Password = MD5Util.sign(rawPassword, salt, "UTF-8");
-        if(!md5Password.equals(dbUser.getPassword())){
+        if (!md5Password.equals(dbUser.getPassword())) {
             throw new ConditionException("密码错误！");
         }
         return TokenUtil.generateToken(dbUser.getId());
@@ -95,28 +103,29 @@ public class UserService {
     public void logout(String refreshToken, Long userId) {
         userMapper.deleteRefreshToken(refreshToken, userId);
     }
+
     // TODO
-    public Map<String, Object> loginForDts(User user) throws Exception{
+    public Map<String, Object> loginForDts(User user) throws Exception {
         String phone = user.getPhone() == null ? "" : user.getPhone();
         String email = user.getEmail() == null ? "" : user.getEmail();
-        if(StringUtils.isNullOrEmpty(phone) && StringUtils.isNullOrEmpty(email)){
+        if (StringUtils.isNullOrEmpty(phone) && StringUtils.isNullOrEmpty(email)) {
             throw new ConditionException("参数异常！");
         }
         User dbUser = userMapper.getUserByPhoneOrEmail(phone, email);
-        if(dbUser == null){
+        if (dbUser == null) {
             throw new ConditionException("当前用户不存在！");
         }
         String password = user.getPassword();
         String rawPassword;
-        try{
+        try {
             rawPassword = RSAUtil.decrypt(password);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ConditionException("密码解密失败！");
         }
-        log.info("rawPassword={}",password);
+        log.info("rawPassword={}", password);
         String salt = dbUser.getSalt();
         String md5Password = MD5Util.sign(rawPassword, salt, "UTF-8");
-        if(!md5Password.equals(dbUser.getPassword())){
+        if (!md5Password.equals(dbUser.getPassword())) {
             throw new ConditionException("密码错误！");
         }
         Long userId = dbUser.getId();
@@ -133,23 +142,38 @@ public class UserService {
 
     public String refreshAccessToken(String refreshToken) throws Exception {
         RefreshTokenDetail refreshTokenDetail = userMapper.getRefreshTokenDetail(refreshToken);
-        if(refreshTokenDetail == null){
-            throw new ConditionException("555","token过期！");
+        if (refreshTokenDetail == null) {
+            throw new ConditionException("555", "token过期！");
         }
         Long userId = refreshTokenDetail.getUserId();
         return TokenUtil.generateToken(userId);
     }
 
-    public User getUserInfo(Long userId) {
-        User user = userMapper.getUserById(userId);
+    public UserInfo getUserInfo(Long userId) {
         UserInfo userInfo = userMapper.getUserInfoByUserId(userId);
-        user.setUserInfo(userInfo);
-        return user;
+        if (userInfo == null) {
+            userInfo = new UserInfo();
+            userInfo.setNick("新用户" + RandomUtil.randomString(5));
+            userInfo.setUserId(userId);
+            userInfoMapper.insert(userInfo);
+            return userInfo;
+        }
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", userId);
+        UserInfo userInfo1 = userInfoMapper.selectOne(queryWrapper);
+        return userInfo1;
     }
 
     public void updateUserInfos(UserInfo userInfo) {
         userInfo.setUpdateTime(new Date());
-        userMapper.updateUserInfos(userInfo);
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", userInfo.getUserId());
+
+        DateTime parse = DateUtil.parse(userInfo.getBirth(), "yyyy-MM-dd");
+        String birth = DateUtil.format(parse, "yyyy-MM-dd");
+
+        userInfo.setBirth(birth);
+        userInfoMapper.update(userInfo, queryWrapper);
     }
 
     public User getUserById(Long followingId) {
@@ -178,11 +202,11 @@ public class UserService {
     public PageResult<UserInfo> pageListUserInfos(JSONObject params) {
         Integer no = params.getInteger("no");
         Integer size = params.getInteger("size");
-        params.put("start", (no-1)*size);
+        params.put("start", (no - 1) * size);
         params.put("limit", size);
         Integer total = userMapper.pageCountUserInfos(params);
         List<UserInfo> list = new ArrayList<>();
-        if(total > 0){
+        if (total > 0) {
             list = userMapper.pageListUserInfos(params);
         }
         return new PageResult<>(total, list);

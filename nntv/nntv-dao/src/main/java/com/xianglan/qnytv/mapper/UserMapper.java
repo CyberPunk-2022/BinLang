@@ -37,6 +37,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     List<UserInfo> pageListUserInfos(JSONObject params);
 
+    // TODO
     Integer deleteRefreshToken(@Param("refreshToken") String refreshToken,
                                @Param("userId") Long userId);
 

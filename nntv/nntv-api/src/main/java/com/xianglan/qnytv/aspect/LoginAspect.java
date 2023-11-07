@@ -1,6 +1,5 @@
 package com.xianglan.qnytv.aspect;
 
-import com.xianglan.qnytv.domain.annotation.SkipAuth;
 import com.xianglan.qnytv.domain.constant.StatusEnum;
 import com.xianglan.qnytv.domain.exception.ConditionException;
 import com.xianglan.qnytv.exception.AuthException;
@@ -8,6 +7,7 @@ import com.xianglan.qnytv.util.SingletonMapCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -26,11 +26,13 @@ import java.lang.reflect.Method;
 @Slf4j
 public class LoginAspect {
 
+
     public static final String X_ACCESS_TOKEN = "X-Access-Token";
 
 
     @Before("execution(* com.xianglan.qnytv.controller.*.*(..))")
     public void point(JoinPoint joinPoint) {
+        Signature signature = joinPoint.getSignature();
         log.info("方法执行前： {}", joinPoint.getSignature().getName());
 
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -38,7 +40,9 @@ public class LoginAspect {
 
         String token = request.getHeader(X_ACCESS_TOKEN);
         //查不到token就表示登录失败
+        //todo 改成走redis查询
         Boolean existToken = existToken(token);
+
         boolean skipAuth = isSkipAuth(joinPoint);
         if (skipAuth) {
             return;
@@ -48,7 +52,6 @@ public class LoginAspect {
         if (!existToken) {
             throw new ConditionException(StatusEnum.AUTH_FAIL.getCode(), StatusEnum.AUTH_FAIL.getMsg());
         }
-
 
     }
 
